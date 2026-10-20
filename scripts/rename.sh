@@ -74,7 +74,18 @@ git ls-files -z \
       echo "  $file"
     done
 
-# 3) GitHub リポジトリの Discussions を有効にする（ralph-loop はゴールを Discussion で受け取る）
+# 3) アプリのモジュールを import している Swift ファイルの import を並べ直す。
+#    テストの `@testable import <アプリ名>` は名前によって並びの位置が変わり、SwiftLint の sorted_imports
+#    （@testable などを除いたモジュール名の、大文字・小文字を区別しない順）に合わなくなる
+echo "==> import を並べ直す"
+git ls-files -z -- '*.swift' \
+  | xargs -0 grep -lE "^(@testable )?import ${NEW_NAME}\$" 2>/dev/null \
+  | while IFS= read -r file; do
+      perl -0pi -e 's{(?:^(?:\@testable )?import [^\n]+\n)+}{join "", sort { lc(($a =~ /import (?:\w+ )?(\S+)$/m)[0]) cmp lc(($b =~ /import (?:\w+ )?(\S+)$/m)[0]) } split /(?<=\n)/, $&}gme' "$file"
+      echo "  $file"
+    done
+
+# 4) GitHub リポジトリの Discussions を有効にする（ralph-loop はゴールを Discussion で受け取る）
 #    gh が無い・権限が無いなどで有効にできなくても、リネームは止めずに手順を表示する
 echo "==> Discussions を有効化"
 if ! command -v gh >/dev/null 2>&1; then
