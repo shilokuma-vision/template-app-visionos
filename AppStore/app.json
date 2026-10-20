@@ -4,13 +4,11 @@
     "project / scheme: 撮影でビルドするプロジェクトと Scheme。scripts/rename.sh で名前ごと置き換わる。",
     "configuration: 撮影でビルドする構成。広告などを写したくないときは、専用の構成を作ってここに書く。",
     "Bundle ID は Configs/Project.xcconfig の APP_BUNDLE_IDENTIFIER から読む（ここに bundleId を書けばそちらを使う）。",
-    "screenshotDemoSource: 撮影モードの Swift ファイル。screenshots.json の scene が ScreenshotDemo.Scene にあるかを突き合わせる。",
-    "appIcon: クリエイティブアセットに載せるアプリアイコン。"
+    "screenshotDemoSource: 撮影モードの Swift ファイル。screenshots.json の scene が ScreenshotDemo.Scene にあるかを突き合わせる。"
   ],
-  "project": "IOSTemplateApp.xcodeproj",
-  "scheme": "IOSTemplateApp",
+  "project": "VisionOSTemplateApp.xcodeproj",
+  "scheme": "VisionOSTemplateApp",
   "configuration": "Release",
-  "simulatorPrefix": "IOSTemplateApp",
-  "screenshotDemoSource": "IOSTemplateApp/Screenshot/ScreenshotDemo.swift",
-  "appIcon": "IOSTemplateApp/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
+  "simulatorPrefix": "VisionOSTemplateApp",
+  "screenshotDemoSource": "VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift"
 }

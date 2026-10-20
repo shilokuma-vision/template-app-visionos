@@ -15,10 +15,10 @@
     python3 Tools/app_store_config.py app project            # app.json の値（project / scheme / configuration / simulatorPrefix）
     python3 Tools/app_store_config.py languages [ja,en]      # 言語ごとの撮影・反映の設定
     python3 Tools/app_store_config.py scenes                 # 撮る画面
-    python3 Tools/app_store_config.py devices APP_IPHONE_67
-    python3 Tools/app_store_config.py sizes APP_IPHONE_67
-    python3 Tools/app_store_config.py derive-from APP_IPHONE_61   # 縮めて作る元の表示サイズ（無ければ空）
-    python3 Tools/app_store_config.py display-types [APP_IPHONE_67,...]  # GitHub Actions の matrix 用 JSON
+    python3 Tools/app_store_config.py devices APP_APPLE_VISION_PRO
+    python3 Tools/app_store_config.py sizes APP_APPLE_VISION_PRO
+    python3 Tools/app_store_config.py derive-from APP_APPLE_VISION_PRO   # 縮めて作る元の表示サイズ（無ければ空）
+    python3 Tools/app_store_config.py display-types [APP_APPLE_VISION_PRO,...]  # GitHub Actions の matrix 用 JSON
     python3 Tools/app_store_config.py bundle-id
 """
 
@@ -104,8 +104,6 @@ def app_value(key: str) -> str:
     if key == "xcodegen":
         # project.yml から .xcodeproj を作るリポジトリ（.xcodeproj をコミットしていない）
         return "true" if config.get("xcodegen") else "false"
-    if key == "appIcon":
-        return config.get("appIcon") or ""
     raise SystemExit(f"app.json の {key} は読めません")
 
 
@@ -362,12 +360,12 @@ def main() -> int:
             print("\t".join(entry))
     elif args.command in ("devices", "sizes"):
         if not args.argument:
-            raise SystemExit("表示サイズ（例: APP_IPHONE_67）を指定してください")
+            raise SystemExit("表示サイズ（例: APP_APPLE_VISION_PRO）を指定してください")
         for value in display_type(args.argument).get(args.command, []):
             print(value)
     elif args.command == "derive-from":
         if not args.argument:
-            raise SystemExit("表示サイズ（例: APP_IPHONE_61）を指定してください")
+            raise SystemExit("表示サイズ（例: APP_APPLE_VISION_PRO）を指定してください")
         print(display_type(args.argument).get("deriveFrom") or "")
     elif args.command == "bundle-id":
         print(bundle_id())

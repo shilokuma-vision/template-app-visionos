@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# テンプレートのプロジェクト名（IOSTemplateApp）を新しいアプリ名に一括変更する。
+# テンプレートのプロジェクト名（VisionOSTemplateApp）を新しいアプリ名に一括変更する。
 # あわせて、GitHub リポジトリの Discussions を有効にする（テンプレートから作成しても設定は引き継がれない）。
 #
 # 使い方:
@@ -16,8 +16,8 @@
 #
 set -euo pipefail
 
-OLD_NAME="IOSTemplateApp"
-OLD_REPO="shilokuma-inc/template-app-ios"
+OLD_NAME="VisionOSTemplateApp"
+OLD_REPO="shilokuma-vision/template-app-visionos"
 
 NEW_NAME="${1:-}"
 if [[ ! "$NEW_NAME" =~ ^[A-Za-z][A-Za-z0-9]*$ ]]; then
@@ -74,7 +74,18 @@ git ls-files -z \
       echo "  $file"
     done
 
-# 3) GitHub リポジトリの Discussions を有効にする（ralph-loop はゴールを Discussion で受け取る）
+# 3) アプリのモジュールを import している Swift ファイルの import を並べ直す。
+#    テストの `@testable import <アプリ名>` は名前によって並びの位置が変わり、SwiftLint の sorted_imports
+#    （@testable などを除いたモジュール名の、大文字・小文字を区別しない順）に合わなくなる
+echo "==> import を並べ直す"
+git ls-files -z -- '*.swift' \
+  | xargs -0 grep -lE "^(@testable )?import ${NEW_NAME}\$" 2>/dev/null \
+  | while IFS= read -r file; do
+      perl -0pi -e 's{(?:^(?:\@testable )?import [^\n]+\n)+}{join "", sort { lc(($a =~ /import (?:\w+ )?(\S+)$/m)[0]) cmp lc(($b =~ /import (?:\w+ )?(\S+)$/m)[0]) } split /(?<=\n)/, $&}gme' "$file"
+      echo "  $file"
+    done
+
+# 4) GitHub リポジトリの Discussions を有効にする（ralph-loop はゴールを Discussion で受け取る）
 #    gh が無い・権限が無いなどで有効にできなくても、リネームは止めずに手順を表示する
 echo "==> Discussions を有効化"
 if ! command -v gh >/dev/null 2>&1; then
@@ -99,4 +110,4 @@ echo
 echo "完了しました。続けて以下を行ってください:"
 echo "  1. Configs/Project.xcconfig の DEVELOPMENT_TEAM と APP_BUNDLE_IDENTIFIER を書き換える"
 echo "  2. git diff で差分を確認し、コミットする"
-echo "  3. App Store に出す前に、AppStore/metadata/*.json と AppStore/creative/src/creative.html の TODO: を書き換える"
+echo "  3. App Store に出す前に、AppStore/metadata/*.json の TODO: を書き換える"

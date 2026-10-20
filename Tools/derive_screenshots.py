@@ -4,6 +4,7 @@
 `AppStore/screenshots.json` で `deriveFrom` を書いた表示サイズが対象。たとえば iPhone 6.3 inch
 （1206x2622）は 6.9 inch（1320x2868）と縦横比がほぼ同じ（差は 0.1% 未満）なので、Simulator で撮り直さず
 縮めて作る。GitHub Actions の macOS ランナーを 1 本ぶん使わずに済む。
+visionOS の表示サイズは Apple Vision Pro の 1 つだけなので今は使っていない（iOS のテンプレートと共通の仕組みとして残している）。
 
     python3 Tools/derive_screenshots.py --display-type APP_IPHONE_61 \\
         --screenshots-dir build/screenshots

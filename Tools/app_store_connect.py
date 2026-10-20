@@ -31,6 +31,9 @@ except ImportError:  # pragma: no cover - 実行環境の問題なので案内�
 
 API = "https://api.appstoreconnect.apple.com"
 
+#: 反映先のバージョンのプラットフォーム（appStoreVersions の platform）
+PLATFORM = "VISION_OS"
+
 #: スクリーンショットを差し替えられるバージョンの状態。
 #: 審査中（WAITING_FOR_REVIEW / IN_REVIEW）や配信済み（READY_FOR_SALE）は触らない。
 EDITABLE_STATES = {
@@ -135,7 +138,7 @@ class AppStoreConnect:
     def find_version(self, app_id: str, version_string: str | None) -> dict:
         versions = self.get_all(
             f"/v1/apps/{app_id}/appStoreVersions",
-            {"filter[platform]": "IOS", "limit": 50},
+            {"filter[platform]": PLATFORM, "limit": 50},
         )
         editable = [v for v in versions if v["attributes"]["appStoreState"] in EDITABLE_STATES]
 

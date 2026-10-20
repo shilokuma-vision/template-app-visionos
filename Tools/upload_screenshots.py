@@ -5,15 +5,15 @@
 App Store Connect API で言語ごとにアップロードする。
 
     python3 Tools/upload_screenshots.py \\
-        --screenshots-dir build/screenshots/APP_IPHONE_67 \\
-        --display-type APP_IPHONE_67
+        --screenshots-dir build/screenshots/APP_APPLE_VISION_PRO \\
+        --display-type APP_APPLE_VISION_PRO
 
 `--languages` を省くと languages.json の全言語を反映する。一部の言語だけ撮り直したときは、
 残っている古い画像まで反映しないよう、撮った言語に絞る。
 
     python3 Tools/upload_screenshots.py \\
-        --screenshots-dir build/screenshots/APP_IPHONE_67 \\
-        --display-type APP_IPHONE_67 \\
+        --screenshots-dir build/screenshots/APP_APPLE_VISION_PRO \\
+        --display-type APP_APPLE_VISION_PRO \\
         --languages ja
 
 認証は App Store Connect API Key（.p8）。次の環境変数でも渡せる。
@@ -49,7 +49,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--screenshots-dir", type=Path, required=True, help="<ここ>/<言語>/*.png を読む")
     parser.add_argument("--bundle-id", help="省略すると project.pbxproj から読む")
-    parser.add_argument("--display-type", required=True, help="App Store Connect の表示サイズ（例: APP_IPHONE_67）")
+    parser.add_argument("--display-type", required=True, help="App Store Connect の表示サイズ（例: APP_APPLE_VISION_PRO）")
     parser.add_argument("--languages", help="対象の言語（カンマ区切り）。省略すると全言語")
     parser.add_argument("--app-version", help="反映先のバージョン。省略すると編集できるバージョンを自動で選ぶ")
     parser.add_argument("--key-id", default=os.environ.get("APP_STORE_CONNECT_KEY_ID"))

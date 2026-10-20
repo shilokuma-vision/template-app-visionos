@@ -68,7 +68,7 @@ jobs:
           xcodebuild archive \
             -project "$PROJECT_NAME.xcodeproj" \
             -scheme "$SCHEME" \
-            -sdk iphoneos \
+            -sdk xros \
             -configuration Release \
             -archivePath "$RUNNER_TEMP/build.xcarchive" \
             CODE_SIGNING_ALLOWED=NO
