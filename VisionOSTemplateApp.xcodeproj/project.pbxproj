@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4FA0000000000000000000F3 /* RealityKitContent in Frameworks */ = {isa = PBXBuildFile; productRef = 4FA0000000000000000000F2 /* RealityKitContent */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		4FC9E1FA2BF1049C00F630AB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -30,6 +34,7 @@
 		4FA0000000000000000000C1 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		4FA0000000000000000000C2 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		4FA0000000000000000000C3 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		4FA0000000000000000000F4 /* RealityKitContent */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = RealityKitContent; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -68,6 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4FA0000000000000000000F3 /* RealityKitContent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +102,7 @@
 				4FA0000000000000000000B3 /* VisionOSTemplateAppUITests */,
 				4FC9E1EA2BF1049B00F630AB /* Products */,
 				4FA0000000000000000000C0 /* Configs */,
+				4FA0000000000000000000F0 /* Packages */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +126,14 @@
 			path = Configs;
 			sourceTree = "<group>";
 		};
+		4FA0000000000000000000F0 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				4FA0000000000000000000F4 /* RealityKitContent */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,6 +154,9 @@
 				4FA0000000000000000000B1 /* VisionOSTemplateApp */,
 			);
 			name = VisionOSTemplateApp;
+			packageProductDependencies = (
+				4FA0000000000000000000F2 /* RealityKitContent */,
+			);
 			productName = VisionOSTemplateApp;
 			productReference = 4FC9E1E92BF1049B00F630AB /* VisionOSTemplateApp.app */;
 			productType = "com.apple.product-type.application";
@@ -614,6 +632,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4F27869D2BF373B800E9F5EF /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		4FA0000000000000000000F2 /* RealityKitContent */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RealityKitContent;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
