@@ -104,8 +104,6 @@ def app_value(key: str) -> str:
     if key == "xcodegen":
         # project.yml から .xcodeproj を作るリポジトリ（.xcodeproj をコミットしていない）
         return "true" if config.get("xcodegen") else "false"
-    if key == "appIcon":
-        return config.get("appIcon") or ""
     raise SystemExit(f"app.json の {key} は読めません")
 
 
