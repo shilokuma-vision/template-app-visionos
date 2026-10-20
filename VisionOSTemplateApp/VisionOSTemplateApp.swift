@@ -9,10 +9,26 @@ import SwiftUI
 
 @main
 struct VisionOSTemplateApp: App {
+    @State private var appModel = AppModel()
+
     var body: some Scene {
         WindowGroup {
             rootView
+                .environment(appModel)
         }
+
+        // 開閉は ToggleImmersiveSpaceButton から行う。open / closed は実際に表示・非表示になったときにだけ書き換える
+        ImmersiveSpace(id: appModel.immersiveSpaceID) {
+            ImmersiveView()
+                .environment(appModel)
+                .onAppear {
+                    appModel.immersiveSpaceState = .open
+                }
+                .onDisappear {
+                    appModel.immersiveSpaceState = .closed
+                }
+        }
+        .immersionStyle(selection: .constant(.mixed), in: .mixed)
     }
 
     /// 撮影モード（ScreenshotDemo）のときは、撮る画面を開く
