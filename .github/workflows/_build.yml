@@ -37,9 +37,23 @@ jobs:
           project=$(basename -s .xcodeproj ./*.xcodeproj)
           echo "PROJECT_NAME=$project" >> "$GITHUB_ENV"
           echo "SCHEME=$project" >> "$GITHUB_ENV"
-          # 最新の iOS ランタイムに存在する iPhone シミュレータを UDID で選ぶ
+          # 最新の visionOS ランタイムに存在する Apple Vision Pro のシミュレータを UDID で選ぶ
           # （名前だけの指定は OS:latest を暗黙に要求し、古いランタイムにしかないデバイスだと解決できない）
-          simulator=$(xcrun simctl list devices available -j | jq -r '.devices | to_entries | map(select(.key | contains("SimRuntime.iOS"))) | sort_by(.key | capture("iOS-(?<maj>[0-9]+)-(?<min>[0-9]+)") | [(.maj|tonumber),(.min|tonumber)]) | reverse | map(.value[] | select(.name | startswith("iPhone"))) | .[0]')
+          find_simulator() {
+            xcrun simctl list devices available -j | jq -c '.devices | to_entries | map(select(.key | contains("SimRuntime.xrOS"))) | sort_by(.key | capture("xrOS-(?<maj>[0-9]+)-(?<min>[0-9]+)") | [(.maj|tonumber),(.min|tonumber)]) | reverse | map(.value[] | select(.name | startswith("Apple Vision Pro"))) | .[0] // empty'
+          }
+          simulator=$(find_simulator)
+          if [[ -z "$simulator" ]]; then
+            # ランナーのイメージから visionOS のランタイムが外れたときに備えて、無ければ選んだ Xcode に合うものを入れる
+            echo "visionOS の Simulator が見つからないため、ランタイムをダウンロードします"
+            xcodebuild -downloadPlatform visionOS
+            simulator=$(find_simulator)
+          fi
+          if [[ -z "$simulator" ]]; then
+            echo "::error::Apple Vision Pro の Simulator が見つかりません" >&2
+            xcrun simctl list devices available >&2
+            exit 1
+          fi
           echo "SIMULATOR_ID=$(jq -r .udid <<<"$simulator")" >> "$GITHUB_ENV"
           echo "project=$project scheme=$project simulator=$(jq -r '"\(.name) (\(.udid))"' <<<"$simulator")"
 
@@ -76,7 +90,7 @@ jobs:
           xcodebuild test \
             -project "$PROJECT_NAME.xcodeproj" \
             -scheme "$SCHEME" \
-            -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
+            -destination "platform=visionOS Simulator,id=$SIMULATOR_ID" \
             -derivedDataPath DerivedData \
             -resultBundlePath TestResults.xcresult \
             -retry-tests-on-failure \
