@@ -5,7 +5,7 @@ App Store Connect は寸法が 1 px でも違えば弾き、アルファ付き�
 アップロードまで進んでから落ちると原因が遠くなるので、撮った時点で落とす。
 
     python3 Tools/verify_screenshots.py \\
-        --directory build/screenshots/APP_IPHONE_67 \\
+        --directory build/screenshots/APP_APPLE_VISION_PRO \\
         --sizes 1320x2868,1290x2796
 
 `<directory>/<言語>/*.png` をすべて見る。枚数が `AppStore/screenshots.json` の scenes と
