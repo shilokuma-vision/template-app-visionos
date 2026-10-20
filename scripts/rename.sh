@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# テンプレートのプロジェクト名（IOSTemplateApp）を新しいアプリ名に一括変更する。
+# テンプレートのプロジェクト名（VisionOSTemplateApp）を新しいアプリ名に一括変更する。
 # あわせて、GitHub リポジトリの Discussions を有効にする（テンプレートから作成しても設定は引き継がれない）。
 #
 # 使い方:
@@ -16,8 +16,8 @@
 #
 set -euo pipefail
 
-OLD_NAME="IOSTemplateApp"
-OLD_REPO="shilokuma-inc/template-app-ios"
+OLD_NAME="VisionOSTemplateApp"
+OLD_REPO="shilokuma-vision/template-app-visionos"
 
 NEW_NAME="${1:-}"
 if [[ ! "$NEW_NAME" =~ ^[A-Za-z][A-Za-z0-9]*$ ]]; then
