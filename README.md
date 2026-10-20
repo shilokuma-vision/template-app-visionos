@@ -1,17 +1,19 @@
 # VisionOSTemplateApp
 
-iOS Application Template (SwiftUI)
+visionOS Application Template (SwiftUI)
 
-iOS アプリのリポジトリを新規作成するときの GitHub テンプレートリポジトリです。
-SwiftUI のプロジェクト一式と、ビルド・テスト・Archive・TestFlight 配信までの GitHub Actions ワークフローを含みます。
+visionOS（Apple Vision Pro）アプリのリポジトリを新規作成するときの GitHub テンプレートリポジトリです。
+SwiftUI / RealityKit のプロジェクト一式と、ビルド・テスト・Archive・TestFlight 配信までの GitHub Actions ワークフローを含みます。
+[shilokuma-inc/template-app-ios](https://github.com/shilokuma-inc/template-app-ios) の visionOS 版で、CI や App Store の掲載情報の仕組みは iOS 版と同じ作りです。
 
 ## Environment
 
 - Xcode 26.6
-- iOS 17.0 以上
+- visionOS 26.0 以上
 - Swift 6（Swift 6 言語モード / Strict Concurrency）
-- SwiftUI / Swift Testing / XCTest（UI テスト）
+- SwiftUI / RealityKit / Swift Testing / XCTest（UI テスト）
 - SwiftLint 0.65.1（Build Tool Plugin。バイナリだけを配布する [SwiftLintPlugins](https://github.com/SimplyDanny/SwiftLintPlugins) 経由）
+- visionOS の Simulator ランタイム（約 7 GB）。Xcode の Settings → Components か、`xcodebuild -downloadPlatform visionOS` で入れます
 
 ## Status
 
@@ -76,6 +78,7 @@ scripts/rename.sh MyApp
 - アプリ名は英字で始まる英数字のみです（Swift のモジュール名になります）
 - README のバッジ URL と Discussions の有効化に使うリポジトリ名は `origin` から推定します。別のものを使う場合は第 2 引数で `owner/repo` を渡します
 - 作業ツリーがクリーンな状態で実行し、実行後に `git diff` で差分を確認してコミットしてください
+- テストの `@testable import <アプリ名>` は、置き換えたあとに SwiftLint の `sorted_imports` に合う順へ並べ直します
 - テンプレートから作成したリポジトリには Discussions の設定が引き継がれず、無効のままになります（ralph-loop はゴールを Discussion で受け取ります）。スクリプトは `gh repo edit --enable-discussions` で有効にするため、`gh` で認証済みで、リポジトリの管理者権限が必要です
 - Discussions を有効にできなかったときは、リネームは止めずに警告と手順を表示します。表示された手順で有効にしてください
 
@@ -89,12 +92,12 @@ scripts/rename.sh MyApp
 | `DEVELOPMENT_TEAM` | Apple Developer Program の Team ID |
 | `APP_BUNDLE_IDENTIFIER` | アプリ本体の Bundle Identifier。テストターゲットは `.Tests` / `.UITests` を付けて自動で派生します |
 | `MARKETING_VERSION` | アプリのバージョン。ビルド番号（`CURRENT_PROJECT_VERSION`）は Upload のときに App Store Connect の最新ビルドを見て Xcode が自動で増やすため、手で上げる必要はありません |
-| `IPHONEOS_DEPLOYMENT_TARGET` | 最低サポート OS |
+| `XROS_DEPLOYMENT_TARGET` | 最低サポート OS。変えるときは [Packages/RealityKitContent/Package.swift](Packages/RealityKitContent/Package.swift) の `platforms` も揃えます |
 
 ### 4. GitHub Secrets を設定する
 
 Archive / Upload ワークフローは App Store Connect API Key で認証します。
-リポジトリの Settings → Secrets and variables → Actions に以下を登録してください。
+リポジトリ（または Organization）の Settings → Secrets and variables → Actions に以下を登録してください。
 
 | Secret | 内容 |
 |---|---|
@@ -104,10 +107,11 @@ Archive / Upload ワークフローは App Store Connect API Key で認証しま
 | `APPLE_API_ISSUER_ID` | API Key の Issuer ID |
 
 API Key は App Store Connect の「ユーザとアクセス → 統合 → App Store Connect API」で、App Manager 以上の権限で発行します。
+
 ### 5. App Store Connect にアプリを作成する
 
 Bundle ID・証明書・プロビジョニングプロファイルは、Export のときに API Key で自動的に作成されます（`-allowProvisioningUpdates`）。
-App Store Connect でのアプリ作成だけは API で行えないため、Web 画面で行います。
+App Store Connect でのアプリ作成だけは API で行えないため、Web 画面で行います。プラットフォームは visionOS を選びます。
 
 アプリを作らずに `develop` へ push しても問題ありません。Upload ワークフローがアップロードの前にアプリの有無を確認し（[.github/scripts/check-app-store-app.rb](.github/scripts/check-app-store-app.rb)）、アプリが無ければ「新規アプリ」画面に入力する値（名前・バンドル ID・SKU など）を Job Summary に表示して止まります。表示された値でアプリを作成してから、ワークフローを再実行してください。
 
@@ -136,6 +140,7 @@ Upload ワークフローは、アップロードの前に TestFlight の内部�
 | Pull Request の作成時（opened / reopened / ready_for_review） | ✅ | | |
 | Fork からの Pull Request | ✅ | | |
 
+- テストは最新の visionOS ランタイムの Apple Vision Pro の Simulator で実行します。ランナーのイメージに visionOS のランタイムが無ければ、選んだ Xcode に合うものをダウンロードします
 - Upload は Archive → IPA Export を含むため、`develop` / `release/**` では Archive を別途実行しません
 - Archive / Upload は Actions タブから手動でも実行できます（Run workflow）。作業ブランチを TestFlight で確認したいときは、Upload を手動実行してそのブランチを選びます
 - リポジトリ変数（Settings → Secrets and variables → Actions → Variables）に `ENABLE_DELIVERY=false` を設定すると Upload をスキップします（Archive は App Store Connect にアプリが無くても通るため止めません）。テンプレートリポジトリ自身はこの設定でアップロードを止めています。テンプレートから作成したリポジトリには引き継がれないため、何もしなければ従来どおり実行されます
@@ -147,6 +152,7 @@ Upload ワークフローは、アップロードの前に TestFlight の内部�
 
 UI の見た目が変わる変更では、Before / After のスクリーンショットを PR 本文に添付します。
 
+- visionOS の Simulator のスクリーンショットは `xcrun simctl io <UDID> screenshot <ファイル>` で撮れます（Apple Vision Pro の Simulator では 3840x2160）
 - 画像は GitHub の添付ファイルとしてアップロードします。git の履歴やブランチには含まれず、マージ後も表示され続けます
   - ブラウザで PR を作る場合は、本文の入力欄に画像をドラッグ & ドロップします
   - CLI（エージェントを含む）では `gh` の `--attach`（gh v2.99.0 以上）を使います。本文に Markdown の表と `![Before](./before.png)` の形でローカルのパスを書き、同じファイルを `--attach` で渡すと、gh がその場でアップロード先の URL に書き換えます
@@ -167,66 +173,78 @@ body=$(gh pr view <番号> --json body -q .body) &&
   | gh pr edit <番号> --body-file -
 ```
 
-### 8. App Store の掲載情報（スクリーンショット・説明文・ヘッダー）
+### 8. App Store の掲載情報（スクリーンショット・説明文）
 
 App Store のプロダクトページに載せるものは、`AppStore/` の JSON を元ネタにして、手動実行のワークフローで App Store Connect に反映します。
-反映先は「編集できる状態のバージョン」だけで、審査中・配信済みのバージョンには触りません。
+反映先は visionOS の「編集できる状態のバージョン」だけで、審査中・配信済みのバージョンには触りません。
 どのワークフローも、リポジトリ変数 `ENABLE_DELIVERY=false` のリポジトリ（テンプレート自身など）では反映しません。
 
 | ワークフロー | 反映するもの | 元ネタ | ランナー |
 |---|---|---|---|
-| `Screenshots/App Store` | スクリーンショット（iPhone 6.9 inch / 6.3 inch / iPad 13 inch / iPhone Duo × 各言語） | `AppStore/screenshots.json` / `AppStore/languages.json` / `AppStore/app.json` | 撮影だけ macOS、縮小と反映は ubuntu |
+| `Screenshots/App Store` | スクリーンショット（Apple Vision Pro × 各言語） | `AppStore/screenshots.json` / `AppStore/languages.json` / `AppStore/app.json` | 撮影だけ macOS、反映は ubuntu |
 | `Metadata/App Store` | 説明文・キーワード・プロモーションテキスト・最新情報・URL（既定は dry-run） | `AppStore/metadata/*.json` | ubuntu |
-| `Creative assets/App Store` | プロダクトページのヘッダーと検索結果のクリエイティブアセット（既定は dry-run） | `AppStore/creative_assets.json` / `AppStore/creative/<言語>/` | ubuntu |
 | `Verify/App Store metadata` | PR で、文字数の上限・撮影設定・撮影モードの Scene との対応を検査する | `AppStore/**` | ubuntu |
+
+iOS 版にあるプロダクトページのヘッダーと検索結果のクリエイティブアセットは、iOS / iPadOS の App Store にだけ出るものなので、このテンプレートには入れていません。
 
 **スクリーンショット**
 
 - 撮影はアプリの撮影モード（[VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift](VisionOSTemplateApp/Screenshot/ScreenshotDemo.swift)）で行います。`Tools/capture_screenshots.sh` が `-screenshot-demo -screenshot-scene <名前>` と言語を起動引数で渡し、アプリはデモデータで目的の画面を開きます
 - 画面を足すときは、`ScreenshotDemo.Scene` に case を足し、`VisionOSTemplateApp.swift` の `rootView` で開く画面を返し、`AppStore/screenshots.json` の `scenes` に同じ名前を足します（1 表示サイズにつき 10 枚まで）
+- 表示サイズは Apple Vision Pro（`APP_APPLE_VISION_PRO`、3840x2160）の 1 つだけです。Simulator の「Apple Vision Pro」がこの寸法で撮れます
+- 撮れるのは起動直後のウィンドウ（`WindowGroup`）で、Simulator の部屋の中に浮かんだ状態で写ります。Immersive Space の様子を載せたいときは、Xcode の Simulator で撮った画像を App Store Connect に直接上げます
 - 撮るのはリリースのときだけです。`release/**` ブランチを選んで手動実行します（それ以外のブランチでは止まります）
-- macOS ランナーの枠を開発のビルドと取り合わないよう、撮影は 1 本ずつ流します。6.3 inch（`deriveFrom`）は撮らずに 6.9 inch を ubuntu で縮めて作り、App Store Connect への反映も ubuntu で行います
-- iPhone Duo は Xcode 27.1 と iOS 27.1 のランタイムが要るので、`xcode-27` のランナーで撮ります（`screenshots.json` の `runsOn` / `xcodeVersion`）
-- 手元で撮るなら `Tools/capture_screenshots.sh APP_IPHONE_67 ja`（出力は `build/screenshots/`）
+- macOS ランナーの枠を開発のビルドと取り合わないよう、撮影は 1 本ずつ流し、App Store Connect への反映は ubuntu で行います
+- 手元で撮るなら `Tools/capture_screenshots.sh APP_APPLE_VISION_PRO ja`（出力は `build/screenshots/`）
 
 **説明文・最新情報**
 
 - `AppStore/metadata/<言語>.json` と `shared.json` に書きます。テンプレートの仮の文言（`TODO:`）が残っているあいだは反映できません
 - 「このバージョンの最新情報」は `whatsNew` に `{"version": "1.1.0", "text": "…"}` の形で書きます。`version` が反映先のバージョンと一致するときだけ書き込むので、リリースごとに両方を書き換えます（最初のバージョンには最新情報の欄がありません）
 
-**プロダクトページのヘッダーと検索結果**（[App Store asset best practices](https://developer.apple.com/app-store/asset-best-practices/)）
+## アプリの構成
 
-- iOS 27 / iPadOS 27 以降の App Store では、スクリーンショットとは別に、プロダクトページのヘッダー（21:9、3840x1646）と検索結果（3:2、3840x2560）に画像を載せられます
-- 元は [AppStore/creative/src/creative.html](AppStore/creative/src/creative.html)。色と文言（`TODO:`）をアプリに合わせて書き換え、6.9 inch のスクリーンショットを撮ってから `Tools/render_creative_assets.sh build/screenshots/APP_IPHONE_67` で書き出し（Google Chrome を使います）、画像もコミットします
-- ヘッダーは初めて来た人にアプリのいちばんの価値を 1 つだけ、検索結果は何をするアプリかを実際の画面と一緒に伝えます。端末によって左右が切れるので、大事なものは中央に寄せます。他社のロゴ・価格・URL・受賞歴は入れません
-- `Creative assets/App Store` を `ref-data` → `dry-run` → `upload` の順に流して反映します。置き場所のグループと画像の仕様は、App Asset Library の参照データから引きます
-- 反映したら、App Store Connect のプレビューで iPhone / iPad の見え方を確かめてから審査に出します
+Xcode の visionOS アプリのテンプレート（Initial Scene: Window、Immersive Space Renderer: RealityKit、Immersive Space: Mixed）と同じ構成です。
+
+| ファイル | 役割 |
+|---|---|
+| [VisionOSTemplateApp.swift](VisionOSTemplateApp/VisionOSTemplateApp.swift) | `WindowGroup`（最初に開くウィンドウ）と `ImmersiveSpace`（周りの空間に出す内容）を宣言する |
+| [ContentView.swift](VisionOSTemplateApp/ContentView.swift) | ウィンドウの中身。`Model3D` で RealityKitContent の `Scene` を出し、Immersive Space を開閉するボタンを置く |
+| [ImmersiveSpace/](VisionOSTemplateApp/ImmersiveSpace) | Immersive Space に出す `ImmersiveView`（`RealityView` で `Immersive` を読み込む）と、開閉のボタン |
+| [AppModel.swift](VisionOSTemplateApp/AppModel.swift) | Immersive Space の開閉の状態など、アプリ全体で共有する状態（`@Observable`） |
+| [Info.plist](VisionOSTemplateApp/Info.plist) | Scene Manifest。複数のシーン（ウィンドウと Immersive Space）を使い、Immersive Space を Mixed で始める |
+| [Packages/RealityKitContent](Packages/RealityKitContent) | 3D の素材（USD）を置く Swift Package。Reality Composer Pro で編集する（[README](Packages/RealityKitContent/README.md)） |
+
+- アプリターゲットは RealityKitContent をリンク済みです。素材を足すときは `RealityKitContent.rkassets` にファイルを置くだけで、pbxproj を変える必要はありません
+- 最初のシーンをウィンドウではなくボリューム（`.windowStyle(.volumetric)`）にするときは、Info.plist の `UIApplicationPreferredDefaultSceneSessionRole` を `UIWindowSceneSessionRoleVolumetricApplication` に変えます
+- Immersive Space を Full / Progressive にするときは、`immersionStyle` と Info.plist の `UISceneInitialImmersionStyle` を揃えて変えます
 
 ## 構成
 
 ```
 .
-├── Configs/                 # xcconfig（署名情報・バージョン・Deployment Target）
-├── VisionOSTemplateApp/          # アプリ本体（SwiftUI）
+├── Configs/                      # xcconfig（署名情報・バージョン・Deployment Target）
+├── VisionOSTemplateApp/          # アプリ本体（SwiftUI / RealityKit）
 ├── VisionOSTemplateAppTests/     # Unit テスト（Swift Testing）
 ├── VisionOSTemplateAppUITests/   # UI テスト（XCTest）
 ├── VisionOSTemplateApp.xcodeproj # 共有スキーム VisionOSTemplateApp を含む
-├── AppStore/                # App Store の掲載情報（言語・撮る画面・説明文・クリエイティブアセット）
-├── Tools/                   # スクリーンショットの撮影と App Store Connect への反映
-├── docs/                    # ExportOptions.plist のサンプル
-├── scripts/                 # rename.sh
-├── .swiftlint.yml           # SwiftLint 設定
+├── Packages/RealityKitContent/   # 3D の素材（Reality Composer Pro）
+├── AppStore/                     # App Store の掲載情報（言語・撮る画面・説明文）
+├── Tools/                        # スクリーンショットの撮影と App Store Connect への反映
+├── docs/                         # ExportOptions.plist のサンプル
+├── scripts/                      # rename.sh
+├── .swiftlint.yml                # SwiftLint 設定
 └── .github/
-    ├── ISSUE_TEMPLATE/      # Issue テンプレート
+    ├── ISSUE_TEMPLATE/           # Issue テンプレート
     ├── pull_request_template.md
-    ├── scripts/             # check-app-store-app.rb（App Store Connect のアプリの有無を確認）
+    ├── scripts/                  # check-app-store-app.rb（App Store Connect のアプリの有無を確認）
     └── workflows/
-        ├── _build.yml       # 共通処理: ビルド + テスト + SwiftLint（workflow_call）
-        ├── _archive.yml     # 共通処理: Archive → Export（→ Upload）（workflow_call）
-        ├── build.yml        # 全ブランチの push / Fork からの PR
-        ├── archive.yml      # main の push
-        ├── upload.yml       # develop / release/** の push
-        ├── app-store-*.yml  # App Store の掲載情報の反映（手動実行）
+        ├── _build.yml            # 共通処理: ビルド + テスト + SwiftLint（workflow_call）
+        ├── _archive.yml          # 共通処理: Archive → Export（→ Upload）（workflow_call）
+        ├── build.yml             # 全ブランチの push / Fork からの PR
+        ├── archive.yml           # main の push
+        ├── upload.yml            # develop / release/** の push
+        ├── app-store-*.yml       # App Store の掲載情報の反映（手動実行）
         └── verify-app-store-metadata.yml  # 掲載情報の検査（PR）
 ```
 
