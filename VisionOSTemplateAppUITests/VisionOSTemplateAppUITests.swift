@@ -20,4 +20,21 @@ final class VisionOSTemplateAppUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["Hello, world!"].waitForExistence(timeout: 5))
     }
+
+    /// Immersive Space を開いて閉じられることを確認する（Info.plist の Scene Manifest と ImmersiveSpace の id が合っているか）
+    @MainActor
+    func testToggleImmersiveSpace() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        let showButton = app.buttons["Show Immersive Space"]
+        XCTAssertTrue(showButton.waitForExistence(timeout: 10))
+        showButton.tap()
+
+        let hideButton = app.buttons["Hide Immersive Space"]
+        XCTAssertTrue(hideButton.waitForExistence(timeout: 10))
+        hideButton.tap()
+
+        XCTAssertTrue(showButton.waitForExistence(timeout: 10))
+    }
 }
