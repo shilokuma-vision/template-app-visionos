@@ -110,4 +110,4 @@ echo
 echo "完了しました。続けて以下を行ってください:"
 echo "  1. Configs/Project.xcconfig の DEVELOPMENT_TEAM と APP_BUNDLE_IDENTIFIER を書き換える"
 echo "  2. git diff で差分を確認し、コミットする"
-echo "  3. App Store に出す前に、AppStore/metadata/*.json の TODO: を書き換える"
+echo "  3. App Store に出す前に、AppStore/metadata/*.json と AppStore/app_info.json の TODO: を書き換える"
