@@ -1,0 +1,12 @@
+{
+  "v": 1,
+  "project": "VisionOSTemplateApp.xcodeproj",
+  "scheme": "VisionOSTemplateApp",
+  "platforms": ["visionOS"],
+  "uiTests": "VisionOSTemplateAppUITests",
+  "archive": { "platforms": ["visionOS"] },
+  "unmanaged": [
+    ".github/workflows/app-store-screenshots.yml",
+    ".github/workflows/app-store-creative.yml"
+  ]
+}
