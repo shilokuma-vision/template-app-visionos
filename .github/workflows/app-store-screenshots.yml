@@ -1,0 +1,52 @@
+# app-kit が配るファイル（shilokuma-inc/app-kit の managed/）。直すときは app-kit で直す。このリポジトリで直すと、次に版を上げたときに上書きされる
+# リポジトリごとの値は .github/app-kit.json に書く。版（@ の後ろのコミットと app-kit-ref）は AskHub の司令塔が書く
+name: Screenshots/App Store
+
+# App Store のスクショを撮る（上げない）。AskHub の司令塔が release ブランチで起動し、artifact screenshots-<表示サイズ> を取り込む。
+# App Store Connect に上げるのは、人が AskHub で確かめた後の司令塔だけ。
+# このファイルの名前と入力は、司令塔のビルドの設定（storeScreenshots の workflow）と合わせてある。変えるときは司令塔と一緒に変える
+# 撮影でビルドするプロジェクトと Scheme は AppStore/app.json、撮る画面と表示サイズは AppStore/screenshots.json、言語は AppStore/languages.json で決める
+# （.github/app-kit.json の project・scheme は、撮影では読まない）
+on:
+  workflow_dispatch:
+    inputs:
+      display_types:
+        description: '撮る表示サイズ（カンマ区切り）。空なら AppStore/screenshots.json のすべて'
+        required: false
+        default: ''
+      languages:
+        description: '撮る言語（カンマ区切り）。空なら AppStore/languages.json のすべて'
+        required: false
+        default: ''
+      upload:
+        description: '前の版との互換のためだけにある（上げるのは AskHub の司令塔なので、true なら止まる）'
+        type: boolean
+        default: false
+      allow_non_release:
+        description: 'release/** 以外のブランチでも撮る（撮影の仕組みを確かめるときだけ）'
+        type: boolean
+        default: false
+      max_parallel:
+        description: '撮影に同時に使う macOS ランナーの数（1〜5）。撮る表示サイズの数より多ければ、余った枠のぶん言語を分けて撮る'
+        type: number
+        default: 1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  screenshots:
+    uses: shilokuma-inc/app-kit/.github/workflows/app-store-screenshots.yml@4c03c46decfb981ac76d554d2da6146154af08e8 # v1.3.0
+    with:
+      # 引用符で囲む（数字と e だけのコミットを、YAML が数として読まないように）
+      app-kit-ref: '4c03c46decfb981ac76d554d2da6146154af08e8'
+      display_types: ${{ inputs.display_types }}
+      languages: ${{ inputs.languages }}
+      upload: ${{ inputs.upload }}
+      allow_non_release: ${{ inputs.allow_non_release }}
+      # API の workflow_dispatch では number の入力も文字列で届き、そのままでは再利用ワークフローの number の入力に断られるので、数にして渡す
+      max_parallel: ${{ fromJSON(inputs.max_parallel) }}
