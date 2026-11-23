@@ -6,7 +6,6 @@
   "uiTests": "VisionOSTemplateAppUITests",
   "archive": { "platforms": ["visionOS"] },
   "unmanaged": [
-    ".github/workflows/app-store-screenshots.yml",
     ".github/workflows/app-store-creative.yml"
   ]
 }

@@ -33,10 +33,10 @@ jobs:
       || github.event.pull_request.head.repo.full_name != github.repository
       || (github.event.action != 'synchronize' && !startsWith(github.base_ref, 'askhub/'))
       || (startsWith(github.head_ref, 'askhub/') && !startsWith(github.base_ref, 'askhub/'))
-    uses: shilokuma-inc/app-kit/.github/workflows/app-build.yml@0cba55e30b678e57815049dd021eb439ab35ba20 # v1.2.0
+    uses: shilokuma-inc/app-kit/.github/workflows/app-build.yml@4c03c46decfb981ac76d554d2da6146154af08e8 # v1.3.0
     with:
       # 引用符で囲む（数字と e だけのコミットを、YAML が数として読まないように）
-      app-kit-ref: '0cba55e30b678e57815049dd021eb439ab35ba20'
+      app-kit-ref: '4c03c46decfb981ac76d554d2da6146154af08e8'
       # 作業ブランチへの push では Unit テストだけ実行し、PR と develop・main・release/** では UI テストも実行する
       ui-tests: >-
         ${{ github.event_name == 'pull_request'

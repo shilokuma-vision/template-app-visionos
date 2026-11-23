@@ -25,10 +25,10 @@ jobs:
   upload:
     # テンプレート自身など、App Store Connect にアプリが無いリポジトリでは、リポジトリの変数 ENABLE_DELIVERY=false で飛ばす
     if: vars.ENABLE_DELIVERY != 'false'
-    uses: shilokuma-inc/app-kit/.github/workflows/app-archive.yml@0cba55e30b678e57815049dd021eb439ab35ba20 # v1.2.0
+    uses: shilokuma-inc/app-kit/.github/workflows/app-archive.yml@4c03c46decfb981ac76d554d2da6146154af08e8 # v1.3.0
     with:
       # 引用符で囲む（数字と e だけのコミットを、YAML が数として読まないように）
-      app-kit-ref: '0cba55e30b678e57815049dd021eb439ab35ba20'
+      app-kit-ref: '4c03c46decfb981ac76d554d2da6146154af08e8'
       upload: true
     # 組織をまたぐと secrets: inherit が効かないので、名前を並べて渡す
     secrets:
